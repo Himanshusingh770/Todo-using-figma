@@ -1,0 +1,57 @@
+.todo-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 0;
+  border-bottom: 1px solid #e6e6e6;
+  word-wrap: break-word; /* Ensure text wraps */
+}
+
+.todo-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 70%; /* 70% for checkbox and todo item */
+  white-space: normal; /* Ensure long text wraps */
+}
+
+.todo-text {
+  font-size: 18px;
+  word-wrap: break-word;
+  white-space: normal; /* Ensure long text wraps */
+}
+
+.todo-time {
+  font-size: 14px;
+  color: grey;
+}
+
+.status-dot, .icon {
+  height: 12px;
+  width: 12px;
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.icon {
+  margin-left: 10px;
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  width: 30%; /* 30% for buttons */
+  justify-content: flex-end; /* Align buttons to the right */
+}
+
+.violet {
+  background-color: violet;
+}
+
+.green {
+  background-color: green;
+}
+
+.red {
+  background-color: red;
+}
