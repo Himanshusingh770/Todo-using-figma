@@ -10,9 +10,9 @@ import './App.css';
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showaddEditModal, setshowaddEditModal] = useState(false);
   const [editTodo, setEditTodo] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteConfirmModel, setshowDeleteConfirmModel] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
 
   useEffect(() => {
@@ -45,7 +45,7 @@ const App = () => {
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, [updateTodoColors]); // Include updateTodoColors in dependencies
 
-  const toggleComplete = (id) => {
+  const toggleTodoComplete = (id) => {
     const updatedList = todos.map((todo) => {
       if (todo.id === id) {
         todo.completed = !todo.completed;
@@ -57,22 +57,22 @@ const App = () => {
   };
 
   // Handler functions
-  const handleToggleComplete = (id) => toggleComplete(id);
+  const handleToggleTodoComplete = (id) => toggleTodoComplete(id);
 
   const handleEditTodo = (todo) => {
     setEditTodo(todo);
-    setShowModal(true);
+    setshowaddEditModal(true);
   };
 
   const handleDeleteTodo = (id) => {
     setTodoToDelete(id);
-    setShowDeleteConfirm(true);
+    setshowDeleteConfirmModel(true);
   };
 
   const handleConfirmDelete = () => {
     setTodos(todos.filter((todo) => todo.id !== todoToDelete));
     setTodoToDelete(null);
-    setShowDeleteConfirm(false);
+    setshowDeleteConfirmModel(false);
   };
 
   const handleAddTodo = (newTodo) => {
@@ -84,14 +84,14 @@ const App = () => {
     }
   };
 
-  const handleShowModal = () => {
+  const handleshowaddEditModal = () => {
     setEditTodo(null); // Clear edit state when adding new todo
-    setShowModal(true);
+    setshowaddEditModal(true);
   };
 
-  const handleHideModal = () => setShowModal(false);
+  const handleHideModal = () => setshowaddEditModal(false);
 
-  const handleHideDeleteModal = () => setShowDeleteConfirm(false);
+  const handleHideDeleteModal = () => setshowDeleteConfirmModel(false);
 
   return (
     <div className="container">
@@ -102,7 +102,7 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={handleShowModal}
+          onClick={handleshowaddEditModal}
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>
@@ -113,18 +113,18 @@ const App = () => {
         todos={todos}
         onEdit={handleEditTodo}
         onDelete={handleDeleteTodo}
-        toggleComplete={handleToggleComplete}
+        toggleComplete={handleToggleTodoComplete}
       />
       
       <AddTodoModal
-        show={showModal}
+        show={showaddEditModal}
         onHide={handleHideModal}
         addTodo={handleAddTodo}
         editTodo={editTodo}
       />
 
       <DeleteModal
-        show={showDeleteConfirm}
+        show={showDeleteConfirmModel}
         onHide={handleHideDeleteModal}
         onDelete={handleConfirmDelete}
       />

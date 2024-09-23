@@ -8,17 +8,14 @@ const AddTodoModal = ({ show, onHide, addTodo, editTodo }) => {
   const [minDateTime, setMinDateTime] = useState('');
 
   useEffect(() => {
-    // Set the minimum date and time (current date and time) for the input
     const currentDateTime = new Date().toISOString().slice(0, 16); // Format to match 'YYYY-MM-DDTHH:MM'
     setMinDateTime(currentDateTime);
 
-    // If in edit mode, populate fields with current todo details
     if (editTodo) {
       setTodoText(editTodo.text);
       setTodoTime(editTodo.time);
       setErrors({ text: '', time: '' }); // Clear errors on opening
     } else {
-      // If adding a new todo, clear the fields
       setTodoText('');
       setTodoTime('');
       setErrors({ text: '', time: '' }); // Clear errors
@@ -33,22 +30,25 @@ const AddTodoModal = ({ show, onHide, addTodo, editTodo }) => {
 
   const handleAdd = () => {
     let hasError = false;
+    const newErrors = { text: '', time: '' }; // Reset errors
 
     if (!todoText.trim()) {
-      setErrors(prev => ({ ...prev, text: 'Todo text cannot be empty!' }));
+      newErrors.text = 'Todo text cannot be empty!';
       hasError = true;
     }
 
     if (!todoTime) {
-      setErrors(prev => ({ ...prev, time: 'Date and time cannot be empty!' }));
+      newErrors.time = 'Date and time cannot be empty!';
       hasError = true;
     } else {
       const validationError = validateDateInput(todoTime);
       if (validationError) {
-        setErrors(prev => ({ ...prev, time: validationError }));
+        newErrors.time = validationError;
         hasError = true;
       }
     }
+
+    setErrors(newErrors); // Update errors state
 
     if (hasError) return;
 
