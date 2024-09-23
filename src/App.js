@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import TodoList from './Components/TodoList';
-import AddTodoModal from './Components/AddTodoModal';
-import DeleteModal from './Components/DeleteModal';
+import AddEditTodoModal from './Components/AddEditTodoModal';
+import ConformDeleteModal from './Components/ConformDeleteModal';
 import Header from './Components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { PlusCircle } from 'react-bootstrap-icons';
 import './App.css';
 
+
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [showaddEditModal, setshowaddEditModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [editTodo, setEditTodo] = useState(null);
-  const [showDeleteConfirmModel, setshowDeleteConfirmModel] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
 
   useEffect(() => {
@@ -45,7 +46,7 @@ const App = () => {
     return () => clearInterval(intervalId); // Cleanup on unmount
   }, [updateTodoColors]); // Include updateTodoColors in dependencies
 
-  const toggleTodoComplete = (id) => {
+  const toggleTimeComplete = (id) => {
     const updatedList = todos.map((todo) => {
       if (todo.id === id) {
         todo.completed = !todo.completed;
@@ -57,22 +58,21 @@ const App = () => {
   };
 
   // Handler functions
-  const handleToggleTodoComplete = (id) => toggleTodoComplete(id);
 
   const handleEditTodo = (todo) => {
     setEditTodo(todo);
-    setshowaddEditModal(true);
+    setShowModal(true);
   };
 
   const handleDeleteTodo = (id) => {
     setTodoToDelete(id);
-    setshowDeleteConfirmModel(true);
+    setShowDeleteConfirm(true);
   };
 
   const handleConfirmDelete = () => {
     setTodos(todos.filter((todo) => todo.id !== todoToDelete));
     setTodoToDelete(null);
-    setshowDeleteConfirmModel(false);
+    setShowDeleteConfirm(false);
   };
 
   const handleAddTodo = (newTodo) => {
@@ -84,14 +84,14 @@ const App = () => {
     }
   };
 
-  const handleshowaddEditModal = () => {
+  const handleShowModal = () => {
     setEditTodo(null); // Clear edit state when adding new todo
-    setshowaddEditModal(true);
+    setShowModal(true);
   };
 
-  const handleHideModal = () => setshowaddEditModal(false);
+  const handleAddEditHideModal = () => setShowModal(false);
 
-  const handleHideDeleteModal = () => setshowDeleteConfirmModel(false);
+  const handleHideDeleteModal = () => setShowDeleteConfirm(false);
 
   return (
     <div className="container">
@@ -102,7 +102,7 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={handleshowaddEditModal}
+          onClick={handleShowModal}
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>
@@ -113,21 +113,24 @@ const App = () => {
         todos={todos}
         onEdit={handleEditTodo}
         onDelete={handleDeleteTodo}
-        toggleComplete={handleToggleTodoComplete}
+        toggleComplete={toggleTimeComplete}
       />
       
-      <AddTodoModal
-        show={showaddEditModal}
-        onHide={handleHideModal}
+      <AddEditTodoModal
+        show={showModal}
+        onHide={handleAddEditHideModal}
         addTodo={handleAddTodo}
         editTodo={editTodo}
       />
 
-      <DeleteModal
-        show={showDeleteConfirmModel}
-        onHide={handleHideDeleteModal}
-        onDelete={handleConfirmDelete}
-      />
+   <ConformDeleteModal
+    showModel={showDeleteConfirm}
+    onHide={handleHideDeleteModal}
+    onDelete={handleConfirmDelete}
+    message="Do you really want to delete this todo?"
+   />
+
+
     </div>
   );
 };

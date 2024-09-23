@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
-const AddTodoModal = ({ show, onHide, addTodo, editTodo }) => {
+const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
   const [todoText, setTodoText] = useState('');
   const [todoTime, setTodoTime] = useState('');
   const [errors, setErrors] = useState({ text: '', time: '' });
@@ -92,4 +92,4 @@ const AddTodoModal = ({ show, onHide, addTodo, editTodo }) => {
   );
 };
 
-export default AddTodoModal;
+export default AddEditTodoModal;
