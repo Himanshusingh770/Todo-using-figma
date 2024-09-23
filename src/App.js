@@ -13,7 +13,7 @@ const App = () => {
   const [todos, setTodos] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [editTodo, setEditTodo] = useState(null);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showDeleteConfirmModel, setshowDeleteConfirmModel] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
 
   useEffect(() => {
@@ -66,13 +66,13 @@ const App = () => {
 
   const handleDeleteTodo = (id) => {
     setTodoToDelete(id);
-    setShowDeleteConfirm(true);
+    setshowDeleteConfirmModel(true);
   };
 
   const handleConfirmDelete = () => {
     setTodos(todos.filter((todo) => todo.id !== todoToDelete));
     setTodoToDelete(null);
-    setShowDeleteConfirm(false);
+    setshowDeleteConfirmModel(false);
   };
 
   const handleAddTodo = (newTodo) => {
@@ -91,7 +91,7 @@ const App = () => {
 
   const handleAddEditHideModal = () => setShowModal(false);
 
-  const handleHideDeleteModal = () => setShowDeleteConfirm(false);
+  const handleHideDeleteModal = () => setshowDeleteConfirmModel(false);
 
   return (
     <div className="container">
@@ -124,7 +124,7 @@ const App = () => {
       />
 
    <ConformDeleteModal
-    showModel={showDeleteConfirm}
+    showModel={showDeleteConfirmModel}
     onHide={handleHideDeleteModal}
     onDelete={handleConfirmDelete}
     message="Do you really want to delete this todo?"
