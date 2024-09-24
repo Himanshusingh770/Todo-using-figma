@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
-  const [todoText, setTodoText] = useState('');
-  const [todoTime, setTodoTime] = useState('');
+  const [formData, setFormData] = useState({
+    todoText: '',
+    todoTime: '',
+  });
+  
   const [errors, setErrors] = useState({ text: '', time: '' });
   const [minDateTime, setMinDateTime] = useState('');
 
@@ -12,12 +15,16 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
     setMinDateTime(currentDateTime);
 
     if (editTodo) {
-      setTodoText(editTodo.text);
-      setTodoTime(editTodo.time);
+      setFormData({
+        todoText: editTodo.text,
+        todoTime: editTodo.time,
+      });
       setErrors({ text: '', time: '' }); // Clear errors on opening
     } else {
-      setTodoText('');
-      setTodoTime('');
+      setFormData({
+        todoText: '',
+        todoTime: '',
+      });
       setErrors({ text: '', time: '' }); // Clear errors
     }
   }, [editTodo, show]);
@@ -28,7 +35,7 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
     
     // Check for invalid dates
     if (isNaN(inputDate)) {
-      return 'Invalid date Please Enter right date.';
+      return 'Invalid date. Please enter a correct date.';
     }
     return inputDate < currentDate ? 'Past dates and times are not allowed.' : null;
   };
@@ -37,16 +44,16 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
     let hasError = false;
     const newErrors = { text: '', time: '' }; // Reset errors
 
-    if (!todoText.trim()) {
+    if (!formData.todoText.trim()) {
       newErrors.text = 'Todo text cannot be empty!';
       hasError = true;
     }
 
-    if (!todoTime) {
+    if (!formData.todoTime) {
       newErrors.time = 'Date and time cannot be empty!';
       hasError = true;
     } else {
-      const validationError = validateDateInput(todoTime);
+      const validationError = validateDateInput(formData.todoTime);
       if (validationError) {
         newErrors.time = validationError;
         hasError = true;
@@ -59,14 +66,30 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
     if (hasError) return;
 
     const newTodo = {
-      text: todoText,
-      time: todoTime || new Date(),
+      text: formData.todoText,
+      time: formData.todoTime || new Date(),
       color: 'violet', // Set the default color
       completed: false,
     };
 
     addTodo(newTodo);
     onHide(); // Close modal after adding
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Clear error if valid input
+    if (name === 'todoText' && value.trim()) {
+      setErrors((prev) => ({ ...prev, text: '' }));
+    } else if (name === 'todoTime' && value) {
+      const validationError = validateDateInput(value);
+      if (!validationError) {
+        setErrors((prev) => ({ ...prev, time: '' }));
+      }
+    }
   };
 
   return (
@@ -76,29 +99,18 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
       </Modal.Header>
       <Modal.Body>
         <textarea
+          name="todoText"
           className={`form-control h-24 ${errors.text ? 'is-invalid' : ''}`}
-          value={todoText}
-          onChange={(e) => {
-            setTodoText(e.target.value);
-            if (e.target.value.trim()) {
-              setErrors((prev) => ({ ...prev, text: '' })); // Clear error if filled
-            }
-          }}
+          value={formData.todoText}
+          onChange={handleInputChange}
         ></textarea>
         <div className="invalid-feedback">{errors.text}</div>
         <input
+          name="todoTime"
           type="datetime-local"
           className={`form-control mt-3 ${errors.time ? 'is-invalid' : ''}`}
-          value={todoTime}
-          onChange={(e) => {
-            setTodoTime(e.target.value);
-            if (e.target.value) {
-              const validationError = validateDateInput(e.target.value);
-              if (!validationError) {
-                setErrors((prev) => ({ ...prev, time: '' })); // Clear error if valid
-              }
-            }
-          }}
+          value={formData.todoTime}
+          onChange={handleInputChange}
           min={minDateTime} // This disables past dates and times
         />
         <div className="invalid-feedback">{errors.time}</div>
