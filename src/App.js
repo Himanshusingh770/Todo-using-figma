@@ -142,7 +142,10 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={() => setShowEditAddModal(true)} // Open modal to add a new todo
+          onClick={() => {
+            setEditTodo(null); // Reset editTodo to ensure it's in Add mode
+            setShowEditAddModal(true); // Open modal to add a new todo
+          }}
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>

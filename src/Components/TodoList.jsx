@@ -20,9 +20,10 @@ const TodoList = ({ todos, onEdit, onDelete, toggleComplete }) => {
               <div className="todo-content">
                 <div className="todo-text">{todo.text}</div>
                 <div className="todo-time d-flex align-items-center">
+                <span className="px-2"> {new Date(todo.time).toLocaleDateString()}</span> {/* Space added */}
                   <Clock className="pe-2 fs-5" />
                   <span>{new Date(todo.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                  <span className="px-2"> {new Date(todo.time).toLocaleDateString()}</span> {/* Space added */}
+                  
                 </div>
               </div>
 
