@@ -11,7 +11,7 @@ import './App.css';
 
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [showModal, setShowModal] = useState(false);
+  const [showEditAddModal, setshowEditAddModal] = useState(false);
   const [editTodo, setEditTodo] = useState(null);
   const [showDeleteConfirmModel, setshowDeleteConfirmModel] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
@@ -61,10 +61,10 @@ const App = () => {
 
   const handleEditTodo = (todo) => {
     setEditTodo(todo);
-    setShowModal(true);
+    setshowEditAddModal(true);
   };
 
-  const handleDeleteTodo = (id) => {
+  const handleConformDeleteTodo = (id) => {
     setTodoToDelete(id);
     setshowDeleteConfirmModel(true);
   };
@@ -75,7 +75,7 @@ const App = () => {
     setshowDeleteConfirmModel(false);
   };
 
-  const handleAddTodo = (newTodo) => {
+  const handleAddEditTodo = (newTodo) => {
     if (editTodo) {
       setTodos(todos.map((todo) => (todo.id === editTodo.id ? newTodo : todo)));
       setEditTodo(null);
@@ -84,12 +84,12 @@ const App = () => {
     }
   };
 
-  const handleShowModal = () => {
+  const handleshowEditAddModal = () => {
     setEditTodo(null); // Clear edit state when adding new todo
-    setShowModal(true);
+    setshowEditAddModal(true);
   };
 
-  const handleAddEditHideModal = () => setShowModal(false);
+  const handleAddEditHideModal = () => setshowEditAddModal(false);
 
   const handleHideDeleteModal = () => setshowDeleteConfirmModel(false);
 
@@ -102,7 +102,7 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={handleShowModal}
+          onClick={handleshowEditAddModal}
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>
@@ -112,14 +112,14 @@ const App = () => {
       <TodoList
         todos={todos}
         onEdit={handleEditTodo}
-        onDelete={handleDeleteTodo}
+        onDelete={handleConformDeleteTodo}
         toggleComplete={toggleTimeComplete}
       />
       
       <AddEditTodoModal
-        show={showModal}
+        show={showEditAddModal}
         onHide={handleAddEditHideModal}
-        addTodo={handleAddTodo}
+        addTodo={handleAddEditTodo}
         editTodo={editTodo}
       />
 
