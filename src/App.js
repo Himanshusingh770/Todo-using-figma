@@ -2,18 +2,17 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { Button } from 'react-bootstrap';
 import TodoList from './Components/TodoList';
 import AddEditTodoModal from './Components/AddEditTodoModal';
-import ConformDeleteModal from './Components/ConformDeleteModal';
+import ConfirmDeleteModal from './Components/ConfirmDeleteModal';
 import Header from './Components/Header';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { PlusCircle } from 'react-bootstrap-icons';
 import './App.css';
 
-
 const App = () => {
   const [todos, setTodos] = useState([]);
-  const [showEditAddModal, setshowEditAddModal] = useState(false);
+  const [showEditAddModal, setShowEditAddModal] = useState(false);
   const [editTodo, setEditTodo] = useState(null);
-  const [showDeleteConfirmModel, setshowDeleteConfirmModel] = useState(false);
+  const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
 
   useEffect(() => {
@@ -59,39 +58,41 @@ const App = () => {
 
   // Handler functions
 
-  const handleEditTodo = (todo) => {
+  const handleShowEditTodo = (todo) => {
     setEditTodo(todo);
-    setshowEditAddModal(true);
+    setShowEditAddModal(true);
   };
 
-  const handleConformDeleteTodo = (id) => {
+  const ConformShowDeleteTodo = (id) => {
     setTodoToDelete(id);
-    setshowDeleteConfirmModel(true);
+    setShowDeleteConfirmModal(true);
   };
 
   const handleConfirmDelete = () => {
     setTodos(todos.filter((todo) => todo.id !== todoToDelete));
     setTodoToDelete(null);
-    setshowDeleteConfirmModel(false);
+    setShowDeleteConfirmModal(false);
   };
 
-  const handleAddEditTodo = (newTodo) => {
-    if (editTodo) {
+  // Merged function: combines adding/editing and showing modal
+  const handleAddEditTodo = (newTodo = null) => {
+    if (editTodo && newTodo) {
+      // Edit mode: Update existing todo
       setTodos(todos.map((todo) => (todo.id === editTodo.id ? newTodo : todo)));
-      setEditTodo(null);
-    } else {
+      setEditTodo(null); // Clear edit state after updating
+    } else if (newTodo) {
+      // Add new todo
       setTodos([...todos, { ...newTodo, id: Date.now() }]);
     }
+
+    // Show the modal
+    setEditTodo(null); // Clear edit state to ensure the modal opens in add mode
+    setShowEditAddModal(true); // Show the modal for adding/editing todos
   };
 
-  const handleshowEditAddModal = () => {
-    setEditTodo(null); // Clear edit state when adding new todo
-    setshowEditAddModal(true);
-  };
+  const handleAddEditHideModal = () => setShowEditAddModal(false);
 
-  const handleAddEditHideModal = () => setshowEditAddModal(false);
-
-  const handleHideDeleteModal = () => setshowDeleteConfirmModel(false);
+  const handleHideDeleteModal = () => setShowDeleteConfirmModal(false);
 
   return (
     <div className="container">
@@ -102,7 +103,7 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={handleshowEditAddModal}
+          onClick={() => handleAddEditTodo()}
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>
@@ -111,8 +112,8 @@ const App = () => {
       {/* Pass the functions via props */}
       <TodoList
         todos={todos}
-        onEdit={handleEditTodo}
-        onDelete={handleConformDeleteTodo}
+        onEdit={handleShowEditTodo}
+        onDelete={ConformShowDeleteTodo}
         toggleComplete={toggleTimeComplete}
       />
       
@@ -123,14 +124,12 @@ const App = () => {
         editTodo={editTodo}
       />
 
-   <ConformDeleteModal
-    showModel={showDeleteConfirmModel}
-    onHide={handleHideDeleteModal}
-    onDelete={handleConfirmDelete}
-    message="Do you really want to delete this todo?"
-   />
-
-
+      <ConfirmDeleteModal
+        showModal={showDeleteConfirmModal}
+        onHide={handleHideDeleteModal}
+        onDelete={handleConfirmDelete}
+        message="Do you really want to delete this todo?"
+      />
     </div>
   );
 };

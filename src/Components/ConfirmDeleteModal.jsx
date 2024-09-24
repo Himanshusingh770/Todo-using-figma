@@ -1,9 +1,9 @@
 import React from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
-const ConformDeleteModal = ({ showModel, onHide, onDelete, message }) => {
+const ConfirmDeleteModal = ({ showModal, onHide, onDelete, message }) => {
   return (
-    <Modal show={showModel} onHide={onHide}>
+    <Modal show={showModal} onHide={onHide}>
       <Modal.Header closeButton>
         <Modal.Title>Delete Todo</Modal.Title>
       </Modal.Header>
@@ -20,4 +20,4 @@ const ConformDeleteModal = ({ showModel, onHide, onDelete, message }) => {
   );
 };
 
-export default ConformDeleteModal;
+export default ConfirmDeleteModal;
