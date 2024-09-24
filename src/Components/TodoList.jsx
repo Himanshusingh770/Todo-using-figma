@@ -21,14 +21,14 @@ const TodoList = ({ todos, onEdit, onDelete, toggleComplete }) => {
                 <div className="todo-text">{todo.text}</div>
                 <div className="todo-time d-flex align-items-center">
                   <Clock className="pe-2 fs-5" />
-                  <span>{new Date(todo.time).toLocaleTimeString()}</span>
-                  <span>{new Date(todo.time).toLocaleDateString()}</span>
+                  <span>{new Date(todo.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="px-2"> {new Date(todo.time).toLocaleDateString()}</span> {/* Space added */}
                 </div>
               </div>
 
               <span className={`status-dot ${todo.color}`}></span>
-              <FaEdit className="icon" onClick={() => onEdit(todo)} />
-              <FaTrash className="icon" onClick={() => onDelete(todo.id)} />
+              <FaEdit className="icon" onClick={() => onEdit(todo)} style={{ cursor: 'pointer'  }} />
+              <FaTrash className="icon" onClick={() => onDelete(todo.id)} style={{ cursor: 'pointer' }} />
             </li>
           ))}
         </ul>

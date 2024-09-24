@@ -14,36 +14,59 @@ const App = () => {
   const [editTodo, setEditTodo] = useState(null);
   const [showDeleteConfirmModal, setShowDeleteConfirmModal] = useState(false);
   const [todoToDelete, setTodoToDelete] = useState(null);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(true);
 
+  // Load todos from localStorage when the component mounts
   useEffect(() => {
-    const storedTodos = JSON.parse(localStorage.getItem('todos')) || [];
-    setTodos(storedTodos);
+    const storedTodos = localStorage.getItem('todos');
+    if (storedTodos) {
+      try {
+        const parsedTodos = JSON.parse(storedTodos);
+        if (Array.isArray(parsedTodos)) {
+          setTodos(parsedTodos);
+        } else {
+          console.error("Invalid data format in localStorage");
+        }
+      } catch (error) {
+        console.error("Error parsing todos from localStorage", error);
+      }
+    }
+    setLoading(false); // Set loading to false after fetching todos
   }, []);
 
+  // Save todos to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
+    if (todos.length > 0) {
+      localStorage.setItem('todos', JSON.stringify(todos));
+    }
+    else {
+         localStorage.removeItem('todos');
+       }
   }, [todos]);
 
-  // Centralized color update logic using useCallback
   const updateTodoColors = useCallback(() => {
-    const updatedList = todos.map((todo) => {
-      const timeDiff = (new Date(todo.time).getTime() - Date.now()) / (1000 * 60 * 60); // Time difference in hours
-      let newColor = todo.color;
+    // Memoizing with empty dependency array to avoid re-creation on each render
+    setTodos((prevTodos) => {
+      return prevTodos.map((todo) => {
+        const timeDiff = (new Date(todo.time).getTime() - Date.now()) / (1000 * 60 * 60); // Calculate time difference
+        let newColor = todo.color;
 
-      if (timeDiff <= 0 && !todo.completed) {
-        newColor = 'red'; // Time limit exceeded, change to red automatically
-      }
-      return { ...todo, color: newColor };
+        if (timeDiff <= 0 && !todo.completed) {
+          newColor = 'red'; // Change color to red if time has passed and not completed
+        }
+        return { ...todo, color: newColor };
+      });
     });
-    setTodos(updatedList);
-  }, [todos]);
+  }, []); // Empty array means this function is only created once
 
+  // Call updateTodoColors at regular intervals without causing re-render loop
   useEffect(() => {
-    const intervalId = setInterval(updateTodoColors, 60000);
-    updateTodoColors(); // Initial color check on load
+    const intervalId = setInterval(updateTodoColors, 60000); // Check every minute
+    updateTodoColors(); // Initial call on mount
 
     return () => clearInterval(intervalId); // Cleanup on unmount
-  }, [updateTodoColors]); // Include updateTodoColors in dependencies
+  }, [updateTodoColors]); // updateTodoColors is memoized, so it won't cause infinite re-renders
 
   const toggleTimeComplete = (id) => {
     const updatedList = todos.map((todo) => {
@@ -56,8 +79,6 @@ const App = () => {
     setTodos(updatedList);
   };
 
-  // Handler functions
-
   const openConfirmEditModal = (todo) => {
     setEditTodo(todo);
     setShowEditAddModal(true);
@@ -69,30 +90,48 @@ const App = () => {
   };
 
   const handleConfirmDelete = () => {
-    setTodos(todos.filter((todo) => todo.id !== todoToDelete));
+    const updatedTodos = todos.filter((todo) => todo.id !== todoToDelete);
+    setTodos(updatedTodos);
     setTodoToDelete(null);
     setShowDeleteConfirmModal(false);
+
+    // Only remove from localStorage if the user deletes all todos
+    if (updatedTodos.length === 0) {
+      localStorage.removeItem('todos');
+    }
   };
 
-  // Merged function: combines adding/editing and showing modal
+  const isValidDate = (dateString) => {
+    const date = new Date(dateString);
+    return !isNaN(date.getTime()) && date.getFullYear() > 1900; // Ensure year is valid
+  };
+
   const handleAddEditTodo = (newTodo = null) => {
+    if (newTodo && !isValidDate(newTodo.time)) {
+      setError('Please enter a valid date and time.');
+      return;
+    }
+    setError(''); // Clear error if valid
+
     if (editTodo && newTodo) {
-      // Edit mode: Update existing todo
+      // Edit mode
       setTodos(todos.map((todo) => (todo.id === editTodo.id ? newTodo : todo)));
-      setEditTodo(null); // Clear edit state after updating
+      setEditTodo(null); // Clear edit state
     } else if (newTodo) {
       // Add new todo
       setTodos([...todos, { ...newTodo, id: Date.now() }]);
     }
-
-    // Show the modal
-    setEditTodo(null); // Clear edit state to ensure the modal opens in add mode
-    setShowEditAddModal(true); // Show the modal for adding/editing todos
+    setEditTodo(null); // Ensure we clear the edit state
+    setShowEditAddModal(false); // Hide modal after adding/editing todos
   };
 
   const handleAddEditHideModal = () => setShowEditAddModal(false);
-
   const handleHideDeleteModal = () => setShowDeleteConfirmModal(false);
+
+  // Do not render the UI until todos are loaded from localStorage
+  if (loading) {
+    return <div>Loading...</div>; // Simple loading indicator
+  }
 
   return (
     <div className="container">
@@ -103,20 +142,21 @@ const App = () => {
           variant="outline-primary"
           className="rounded-circle p-0 border-0"
           style={{ width: '50px', height: '50px', backgroundColor: 'white' }}
-          onClick={() => handleAddEditTodo()}
+          onClick={() => setShowEditAddModal(true)} // Open modal to add a new todo
         >
           <PlusCircle className="text-primary" size={40} />
         </Button>
       </div>
 
-      {/* Pass the functions via props */}
+      {error && <div className="alert alert-danger">{error}</div>}
+
       <TodoList
         todos={todos}
         onEdit={openConfirmEditModal}
         onDelete={openConfirmDeleteModal}
         toggleComplete={toggleTimeComplete}
       />
-      
+
       <AddEditTodoModal
         show={showEditAddModal}
         onHide={handleAddEditHideModal}

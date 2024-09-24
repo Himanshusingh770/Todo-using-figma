@@ -25,6 +25,11 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
   const validateDateInput = (inputTime) => {
     const currentDate = new Date();
     const inputDate = new Date(inputTime);
+    
+    // Check for invalid dates
+    if (isNaN(inputDate)) {
+      return 'Invalid date Please Enter right date.';
+    }
     return inputDate < currentDate ? 'Past dates and times are not allowed.' : null;
   };
 
@@ -48,8 +53,9 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
       }
     }
 
-    setErrors(newErrors); // Update errors state
-
+    // Clear errors when fields are correctly filled
+    setErrors(newErrors);
+    
     if (hasError) return;
 
     const newTodo = {
@@ -72,14 +78,27 @@ const AddEditTodoModal = ({ show, onHide, addTodo, editTodo }) => {
         <textarea
           className={`form-control h-24 ${errors.text ? 'is-invalid' : ''}`}
           value={todoText}
-          onChange={(e) => setTodoText(e.target.value)}
+          onChange={(e) => {
+            setTodoText(e.target.value);
+            if (e.target.value.trim()) {
+              setErrors((prev) => ({ ...prev, text: '' })); // Clear error if filled
+            }
+          }}
         ></textarea>
         <div className="invalid-feedback">{errors.text}</div>
         <input
           type="datetime-local"
           className={`form-control mt-3 ${errors.time ? 'is-invalid' : ''}`}
           value={todoTime}
-          onChange={(e) => setTodoTime(e.target.value)}
+          onChange={(e) => {
+            setTodoTime(e.target.value);
+            if (e.target.value) {
+              const validationError = validateDateInput(e.target.value);
+              if (!validationError) {
+                setErrors((prev) => ({ ...prev, time: '' })); // Clear error if valid
+              }
+            }
+          }}
           min={minDateTime} // This disables past dates and times
         />
         <div className="invalid-feedback">{errors.time}</div>

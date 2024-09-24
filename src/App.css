@@ -2,7 +2,7 @@
   max-width: 570px !important ; 
   margin: 0 auto;
   padding: 20px;
-  height: 100vh;
+  min-height: 100vh;
   border: 0.5px solid rgb(201, 201, 201);
   border-top: none;
   border-bottom: none;
@@ -21,11 +21,6 @@
   font-weight:bold;
 }
 
-.icons {
-  display: flex;
-  gap: 8px;
-}
-
 .icon {
   font-size: 18px;
   color: black;
@@ -41,7 +36,7 @@
 
 .icons {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 .addButton{
   color: blue;
