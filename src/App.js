@@ -58,12 +58,12 @@ const App = () => {
 
   // Handler functions
 
-  const OpenConfirmEditModal = (todo) => {
+  const openConfirmEditModal = (todo) => {
     setEditTodo(todo);
     setShowEditAddModal(true);
   };
 
-  const OpenConfirmDeleteModal = (id) => {
+  const openConfirmDeleteModal = (id) => {
     setTodoToDelete(id);
     setShowDeleteConfirmModal(true);
   };
@@ -112,8 +112,8 @@ const App = () => {
       {/* Pass the functions via props */}
       <TodoList
         todos={todos}
-        onEdit={OpenConfirmEditModal}
-        onDelete={OpenConfirmDeleteModal}
+        onEdit={openConfirmEditModal}
+        onDelete={openConfirmDeleteModal}
         toggleComplete={toggleTimeComplete}
       />
       
